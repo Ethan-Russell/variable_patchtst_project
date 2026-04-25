@@ -6,7 +6,6 @@ readme = "README.md"
 authors = [
     { name = "Ethan Russell", email = "ecr84@cornell.edu" }
 ]
-requires-python = ">=3.13"
 dependencies = [
     "kagglehub>=1.0.0",
     "numpy>=2.4.4",

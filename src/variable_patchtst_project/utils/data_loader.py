@@ -1,9 +1,10 @@
 import os
 import shutil
 import pandas as pd
+import numpy as np
+from torch.utils.data import Dataset, DataLoader
 
-
-def load_electricity_dataset():
+def load_electricity_data():
     
     try:
         from google.colab import drive
@@ -46,10 +47,10 @@ def load_electricity_dataset():
     
     return dataset_path
 
-def read_electricity_dataset(dataset_path=None):
+def read_electricity_data(dataset_path=None):
     
     if dataset_path is None:
-        dataset_path = load_electricity_dataset()
+        dataset_path = load_electricity_data()
     
     # Read the CSV
     df = pd.read_csv(dataset_path)
@@ -79,7 +80,7 @@ def read_electricity_dataset(dataset_path=None):
     data = df.values.astype(np.float32)
 
     print(f"\nData has been converted into numpy array with shape: {data.shape}")
-    return data
+    return data, df
 
 
 ################################################################################
