@@ -5,13 +5,15 @@ import numpy as np
 import torch
 from torch.utils.data import Dataset, DataLoader
 
+COLAB_DATA_PATH = '/content/drive/MyDrive/CS6787-time-series-forecast'
+
 def load_electricity_data():
     
     try:
         from google.colab import drive
         drive.mount('/content/drive')
         IN_COLAB = True
-        path_prefix = '/content/drive/MyDrive/CS6787-time-series-forecast'
+        path_prefix = COLAB_DATA_PATH
     except ImportError:
         IN_COLAB = False
         path_prefix = '../../../data'
