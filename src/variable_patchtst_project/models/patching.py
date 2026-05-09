@@ -54,7 +54,7 @@ def get_perfect_patches(seq_len, num_patches, min_patch_size, num_scales):
 
         current_offset += T
     
-    patch_definitions.reverse()
+    patch_definitions.sort(key=lambda t: (t[0], t[1]))
 
     for start, end, P in patch_definitions:
         assert 0 <= start < end <= seq_len, (start, end, seq_len)
@@ -93,3 +93,8 @@ class UniformPatchAlgorithm:
     def __call__(self, sequence_length):
         patch_definitions = get_uniform_patches(sequence_length, self.patch_size, self.patch_stride)
         return patch_definitions
+    
+
+patch_algo = VariablePatchAlgorithm(8, 6, 64)
+a = patch_algo.__call__(512)
+print(a)
