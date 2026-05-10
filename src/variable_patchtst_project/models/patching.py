@@ -59,10 +59,11 @@ def get_perfect_patches(seq_len, num_patches, min_patch_size, num_scales):
     return patch_definitions
 
 def get_uniform_patches(seq_len, patch_size, stride):
+    seq_len_ext = seq_len + stride
     patch_definitions = []
     start = 0
     end = patch_size
-    while end <= seq_len:
+    while end <= seq_len_ext:
         patch_definitions.append((start, end, patch_size))
         start += stride
         end += stride

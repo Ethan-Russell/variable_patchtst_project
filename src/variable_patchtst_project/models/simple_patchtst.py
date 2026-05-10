@@ -105,6 +105,8 @@ class SimplePatchTST(nn.Module):
     ):
         super().__init__()
         patch_definitions = patch_algorithm(sequence_length)
+        
+        self.num_pad = max([p[1] for p in patch_definitions]) - sequence_length
 
         patch_sizes = np.sort(np.unique([p[2] for p in patch_definitions]))
         num_patches = len(patch_definitions)
@@ -150,6 +152,18 @@ class SimplePatchTST(nn.Module):
     def forward(self, past_values):
         # past_values: (B, L, C)
         batch_size, _, num_channels = past_values.shape
+
+        # pad with last value num_pad times
+        if self.num_pad > 0:
+            # Grab the last time step: (batch, 1, channels)
+            past_values = past_values[:, -1:, :]
+            
+            # Create the padding by repeating that last value
+            # We repeat the '1' in the middle dim self.num_pad times
+            padding = past_values.repeat(1, self.num_pad, 1)
+            
+            # 3. Concatenate along the temporal dimension (dim=1)
+            past_values = torch.cat([past_values, padding], dim=1)
 
         # P = patch length (changes per patch)
         # N = num patches
