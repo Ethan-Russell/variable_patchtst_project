@@ -111,6 +111,9 @@ class SimplePatchTST(nn.Module):
         patch_sizes = np.sort(np.unique([p[2] for p in patch_definitions]))
         num_patches = len(patch_definitions)
 
+        print(f"Num patches: {num_patches}")
+        print(f"Num pad: {self.num_pad}")
+
         self.num_patches = num_patches
         self.patch_sizes = patch_sizes
         self.d_model = d_model
@@ -156,11 +159,11 @@ class SimplePatchTST(nn.Module):
         # pad with last value num_pad times
         if self.num_pad > 0:
             # Grab the last time step: (batch, 1, channels)
-            past_values = past_values[:, -1:, :]
+            last_values = past_values[:, -1:, :]
             
             # Create the padding by repeating that last value
             # We repeat the '1' in the middle dim self.num_pad times
-            padding = past_values.repeat(1, self.num_pad, 1)
+            padding = last_values.repeat(1, self.num_pad, 1)
             
             # 3. Concatenate along the temporal dimension (dim=1)
             past_values = torch.cat([past_values, padding], dim=1)
