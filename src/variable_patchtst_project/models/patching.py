@@ -1,3 +1,5 @@
+import numpy as np
+
 def get_perfect_patches(seq_len, num_patches, min_patch_size, num_scales):
     """
     Calculates patch boundaries so that the entire seq_len is covered
