@@ -28,30 +28,52 @@ class Patchifier(nn.Module):
 
 
 class DynamicEmbedding(nn.Module):
-    def __init__(self, patch_sizes, d_model):
+    def __init__(self, patch_definitions, patch_sizes, d_model):
         super().__init__()
-        # Create a projection for each unique patch size you plan to use
+        self.d_model = d_model
+        # Store definitions to know which patches share sizes
+        self.patch_definitions = patch_definitions 
         self.projs = nn.ModuleDict({
             f"p{sz}": nn.Linear(sz, d_model) for sz in patch_sizes
         })
+        
+        # Pre-group indices by patch size to avoid dictionary lookups in forward
+        self.size_groups = {}
+        for i, (_, _, sz) in enumerate(patch_definitions):
+            if sz not in self.size_groups:
+                self.size_groups[sz] = []
+            self.size_groups[sz].append(i)
 
     def forward(self, list_of_patches):
-        # Each patch in list_of_patches: (Batch, Channels, Patch_Length)
-        embedded_patches = []
+        # list_of_patches: list of [B, C, P_i] tensors
+        b, c, _ = list_of_patches[0].shape
+        num_total_patches = len(list_of_patches)
+        device = list_of_patches[0].device
         
-        for patch in list_of_patches:
-            b, c, p = patch.shape
+        # 1. Pre-allocate the full output tensor to avoid torch.stack copies
+        # Shape: (B*C, Num_Patches, d_model)
+        embedded = torch.empty((b * c, num_total_patches, self.d_model), device=device)
+
+        # 2. Process by Scale Group
+        for sz, indices in self.size_groups.items():
+            # Gather all patches of this size: (Num_in_group, B, C, sz)
+            # We use torch.stack here on a smaller subset
+            group_patches = torch.stack([list_of_patches[i] for i in indices], dim=0)
             
-            # Flatten Batch and Channels: (B*C, P)
-            patch_reshaped = patch.reshape(b * c, p)
+            # Flatten to (Num_in_group * B * C, sz)
+            # This is one big matrix for the GPU to chew on
+            group_flat = group_patches.permute(1, 2, 0, 3).reshape(-1, sz)
+            
+            # One single Kernel Launch per unique size
+            projected = self.projs[f"p{sz}"](group_flat)
+            
+            # Reshape back to (B*C, Num_in_group, d_model)
+            projected = projected.view(b * c, len(indices), self.d_model)
+            
+            # Place into the pre-allocated tensor
+            embedded[:, indices, :] = projected
 
-            # Project P -> d_model
-            proj = self.projs[f"p{p}"](patch_reshaped)
-            embedded_patches.append(proj)
-
-        # Stack into (B*C, Num_Patches, d_model)
-        return torch.stack(embedded_patches, dim=1)
-
+        return embedded
 class PositionalEncoding(nn.Module):
     def __init__(self, d_model: int, dropout: float = 0.1, max_len: int = 1024):
         super().__init__()
@@ -131,7 +153,7 @@ class SimplePatchTST(nn.Module):
         
         # Build the embedding that changes from heterogeneous patch dimensions 
         # to the model dimension
-        self.embed = DynamicEmbedding(self.patch_sizes, self.d_model)
+        self.embed = DynamicEmbedding(patch_definitions, self.patch_sizes, self.d_model)
 
         # Build positional embedding
         self.position_embed = PositionalEncoding(self.d_model, self.dropout, self.sequence_length)
