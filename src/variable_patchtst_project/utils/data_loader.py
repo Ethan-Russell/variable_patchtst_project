@@ -5,7 +5,7 @@ import numpy as np
 import torch
 from torch.utils.data import Dataset, DataLoader
 
-COLAB_DATA_PATH = '/content/drive/MyDrive/CS6787-time-series-forecast'
+COLAB_DATA_PATH = '/content/drive/MyDrive/variable-patchtst-experiments'
 
 def load_electricity_data():
     
