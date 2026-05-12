@@ -47,4 +47,4 @@ The intended workflow is **`notebooks/01_Experiments.ipynb`**:
 
 For visualization of patch layouts, see **`notebooks/02_Patch_Plots.ipynb`**.
 
-To reproduce the course experiments in **Google Colab**, simply copy or open `01_Experiments.ipynb` in Colab, run the setup cells (clone or pull this repo, install dependencies), then execute the training and sweep cells.
+To reproduce the course experiments in **Google Colab**, simply copy or open `01_Experiments.ipynb` in Colab, run the setup cells (which clone or pull this repo, install dependencies), then execute the training and sweep cells.
