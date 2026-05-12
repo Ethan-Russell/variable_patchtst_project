@@ -4,7 +4,7 @@ This repository contains the model and data handling code used for the VariableP
 
 ## Introduction
 
-This repo contains the implementation for VariablePatchTST, a dynamically patching algorithm that utilizes a multi-resolution hierarchy of temporal patches that increase in length according to a geometric progression. Patch lengths start with a minimum size times powers of two, with more tokens allocated to finer scales so that recent timesteps are represented at higher resolution and older timesteps at coarser resolution.
+VariablePatchTST is a dynamically patching algorithm that utilizes a multi-resolution hierarchy of temporal patches that increase in length according to a geometric progression. Patch lengths start with a minimum size times powers of two, with more tokens allocated to finer scales so that recent timesteps are represented at higher resolution and older timesteps at coarser resolution.
 
 ## What is implemented
 
