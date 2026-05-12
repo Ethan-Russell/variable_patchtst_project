@@ -16,7 +16,7 @@ Core code lives under `src/variable_patchtst_project/`:
 
 | Module | Role |
 |--------|------|
-| `utils/data_loader.py` | Electricity load dataset (KaggleHub), `ElectricityLoadDataset`, `StandardScaler` |
+| `utils/data_loader.py` | Electricity load dataset (KaggleHub), `ElectricityLoadDataset` pulls and creates necessary `Dataset` objects |
 | `models/patching.py` | Patch boundary computation and patch algorithms |
 | `models/simple_patchtst.py` | `SimplePatchTST` for model, `Patchifier` for smart patch creation, `DynamicEmbedding` for automatic embedding layer creation depending on incoming patch size, and `PositionalEncoding` |
 
